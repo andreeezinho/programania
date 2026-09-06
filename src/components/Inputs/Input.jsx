@@ -2,19 +2,22 @@ export default function Input({
   label,
   type = "text",
   placeholder,
+  as = "input",
   ...props
 }) {
+  const Field = as;
+
   return (
     <label className="flex w-full flex-col gap-2">
-      <span className="text-sm font-bold text-white">
+      <span className="text-xs font-bold tracking-wide text-[#687b3e]">
         {label}
       </span>
 
-      <input
-        type={type}
+      <Field
+        {...(as === "input" ? { type } : {})}
         placeholder={placeholder}
         {...props}
-        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-gray-700 shadow-md outline-none placeholder:text-gray-300"
+        className="min-h-11 w-full rounded-b-xl border-0 border-b-2 border-[#d6d5cc] bg-white px-4 py-3 text-sm text-[#59604c] shadow-[0_3px_3px_rgba(52,59,37,0.22)] outline-none transition placeholder:text-[#d3d4cf] focus:border-[#7d964a]"
       />
     </label>
   );
