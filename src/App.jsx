@@ -3,6 +3,7 @@ import PrivateRoute from "./hooks/PrivateRoute";
 import LoginRoute from "./hooks/LoginRoute";
 import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
+import Cadastro from "./pages/Cadastro/Cadastro";
 
 export default function App() {
   return(
@@ -13,6 +14,7 @@ export default function App() {
           <Route path="/login" element={<LoginRoute />}>
             <Route index element={<Login />} />
           </Route>
+<Route path="/cadastro" element={<Cadastro />} />
 
           {/* ROTAS PUBLICAS */} 
           {/* <Route path="/recuperar-senha" element={<RecoveryPassword />} /> */}
