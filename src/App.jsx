@@ -4,6 +4,7 @@ import LoginRoute from "./hooks/LoginRoute";
 import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import Cadastro from "./pages/Cadastro/Cadastro";
+import Ajuda from "./pages/Ajuda/ajuda";
 
 export default function App() {
   return(
@@ -21,6 +22,7 @@ export default function App() {
 
           <Route path="/" element={<PrivateRoute />}>
             <Route index element={<Home />} />
+            <Route path="ajuda" element={<Ajuda />} />
           </Route>
 
         </Routes>
