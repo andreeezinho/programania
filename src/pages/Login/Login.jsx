@@ -2,6 +2,7 @@ import Input from "../../components/Inputs/Input";
 import Button from "../../components/Buttons/Button";
 import ButtonGoogle from "../../components/Buttons/ButtonGoogle";
 import loginImage from "../../assets/login-image.png";
+import PasswordInput from "../../components/Inputs/PasswordInput";
 
 export default function Login() {
   return (
@@ -24,15 +25,15 @@ export default function Login() {
 
       <section className="flex w-1/2 items-center justify-center bg-[#7C9445] px-10">
         <div className="w-full max-w-[310px]">
-          <h2 className="mb-4 text-center text-3xl font-bold tracking-wider text-white">
+          <h2 className="mb-14 text-center text-5xl font-bold tracking-wider text-white">
             Login
           </h2>
 
-          <p className="mb-7 text-center text-[10px] text-white">
+          <p className="mb-7 text-center text-[12px] text-white">
             Não possui login?{" "}
             <a
               href="#"
-              className="font-bold text-[#F2635D]"
+              className="font-bold text-[#F2635D] hover:underline"
             >
               Cadastre-se
             </a>
@@ -44,6 +45,7 @@ export default function Login() {
               type="email"
               placeholder="Insira o seu e-mail"
               name="email"
+              text_color="white"
             />
 
             <Input
@@ -51,11 +53,12 @@ export default function Login() {
               type="password"
               placeholder="Insira a sua senha"
               name="password"
+              text_color="white"
             />
 
             <a
               href="#"
-              className="-mt-2 text-[10px] text-white underline"
+              className="-mt-2 text-[10px] text-white underline hover:no-underline"
             >
               Esqueceu sua senha?
             </a>
@@ -64,7 +67,7 @@ export default function Login() {
               <Button
                 type="submit"
                 text="Entrar"
-                className="rounded-xl bg-[#F2635D] px-10 py-2 text-sm font-bold text-white shadow-md"
+                className="rounded-xl bg-[#F2635D] px-10 py-2 text-sm font-bold text-white shadow-md cursor-pointer transition hover:bg-[#e55a50]"
               />
             </div>
           </form>

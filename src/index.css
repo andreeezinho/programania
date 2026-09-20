@@ -5,8 +5,3 @@
 @theme {
     --font-intel-one-mono: "Intel One Mono", sans-serif;
 }
-
-* {
-    margin: 0;
-    padding: 0;
-}
