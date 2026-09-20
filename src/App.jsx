@@ -15,7 +15,7 @@ export default function App() {
           <Route path="/login" element={<LoginRoute />}>
             <Route index element={<Login />} />
           </Route>
-<Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/cadastro" element={<Cadastro />} />
 
           {/* ROTAS PUBLICAS */} 
           {/* <Route path="/recuperar-senha" element={<RecoveryPassword />} /> */}

@@ -5,19 +5,19 @@ import loginImage from "../../assets/login-image.png";
 
 export default function Login() {
   return (
-    <main className="flex min-h-[100dvh] w-full">
-      <section className="flex w-1/2 flex-col items-center justify-center bg-[#F4F4EF] px-10">
-        <h1 className="mb-7 text-3xl font-bold tracking-wide text-[#78943B]">
+    <main className="flex min-h-[100dvh] w-full bg-[url('/background.png')] bg-cover bg-center font-intel-one-mono">
+      <section className="flex w-1/2 flex-col items-center justify-center px-10">
+        <h1 className="mb-7 text-5xl font-bold tracking-wide text-[#78943B]">
           PROGRAMANIA!
         </h1>
 
         <img
           src={loginImage}
           alt="Mãos digitando em um teclado"
-          className="w-full max-w-[360px] object-contain"
+          className="w-2xl object-contain"
         />
 
-        <p className="mt-8 text-center text-[10px] font-medium tracking-wide text-[#78943B]">
+        <p className="mt-8 text-center text-md font-medium tracking-wide text-[#78943B]">
           Plataforma de Incentivo na Introdução à Programação para Crianças
         </p>
       </section>
