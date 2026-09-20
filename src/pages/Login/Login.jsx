@@ -48,9 +48,8 @@ export default function Login() {
               text_color="white"
             />
 
-            <Input
+            <PasswordInput
               label="Senha"
-              type="password"
               placeholder="Insira a sua senha"
               name="password"
               text_color="white"
