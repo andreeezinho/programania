@@ -32,7 +32,7 @@ export default function Login() {
           <p className="mb-7 text-center text-[12px] text-white">
             Não possui login?{" "}
             <a
-              href="#"
+              href="/cadastro"
               className="font-bold text-[#F2635D] hover:underline"
             >
               Cadastre-se
