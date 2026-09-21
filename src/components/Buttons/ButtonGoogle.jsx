@@ -4,7 +4,7 @@ const ButtonGoogle = () => {
   return (
     <button
       type="button"
-      className="flex items-center justify-center gap-2 bg-white rounded-xl px-4 py-2 shadow-md cursor-pointer"
+      className="flex items-center justify-center gap-2 bg-white rounded-xl px-4 py-2 shadow-md cursor-pointer transition hover:bg-[#f0f0f0]"
     >
       <img
         src={googleIcon}

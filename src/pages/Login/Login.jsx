@@ -2,37 +2,38 @@ import Input from "../../components/Inputs/Input";
 import Button from "../../components/Buttons/Button";
 import ButtonGoogle from "../../components/Buttons/ButtonGoogle";
 import loginImage from "../../assets/login-image.png";
+import PasswordInput from "../../components/Inputs/PasswordInput";
 
 export default function Login() {
   return (
-    <main className="flex min-h-[100dvh] w-full">
-      <section className="flex w-1/2 flex-col items-center justify-center bg-[#F4F4EF] px-10">
-        <h1 className="mb-7 text-3xl font-bold tracking-wide text-[#78943B]">
+    <main className="flex min-h-[100dvh] w-full bg-[url('/background.png')] bg-cover bg-center font-intel-one-mono">
+      <section className="flex w-1/2 flex-col items-center justify-center px-10">
+        <h1 className="mb-7 text-5xl font-bold tracking-wide text-[#78943B]">
           PROGRAMANIA!
         </h1>
 
         <img
           src={loginImage}
           alt="Mãos digitando em um teclado"
-          className="w-full max-w-[360px] object-contain"
+          className="w-2xl object-contain"
         />
 
-        <p className="mt-8 text-center text-[10px] font-medium tracking-wide text-[#78943B]">
+        <p className="mt-8 text-center text-md font-medium tracking-wide text-[#78943B]">
           Plataforma de Incentivo na Introdução à Programação para Crianças
         </p>
       </section>
 
       <section className="flex w-1/2 items-center justify-center bg-[#7C9445] px-10">
         <div className="w-full max-w-[310px]">
-          <h2 className="mb-4 text-center text-3xl font-bold tracking-wider text-white">
+          <h2 className="mb-14 text-center text-5xl font-bold tracking-wider text-white">
             Login
           </h2>
 
-          <p className="mb-7 text-center text-[10px] text-white">
+          <p className="mb-7 text-center text-[12px] text-white">
             Não possui login?{" "}
             <a
-              href="#"
-              className="font-bold text-[#F2635D]"
+              href="/cadastro"
+              className="font-bold text-[#F2635D] hover:underline"
             >
               Cadastre-se
             </a>
@@ -44,18 +45,19 @@ export default function Login() {
               type="email"
               placeholder="Insira o seu e-mail"
               name="email"
+              text_color="white"
             />
 
-            <Input
+            <PasswordInput
               label="Senha"
-              type="password"
               placeholder="Insira a sua senha"
               name="password"
+              text_color="white"
             />
 
             <a
               href="#"
-              className="-mt-2 text-[10px] text-white underline"
+              className="-mt-2 text-[10px] text-white underline hover:no-underline"
             >
               Esqueceu sua senha?
             </a>
@@ -64,7 +66,7 @@ export default function Login() {
               <Button
                 type="submit"
                 text="Entrar"
-                className="rounded-xl bg-[#F2635D] px-10 py-2 text-sm font-bold text-white shadow-md"
+                className="rounded-xl bg-[#F2635D] px-10 py-2 text-sm font-bold text-white shadow-md cursor-pointer transition hover:bg-[#e55a50]"
               />
             </div>
           </form>
