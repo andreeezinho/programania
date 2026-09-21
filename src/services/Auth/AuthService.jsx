@@ -12,7 +12,7 @@ export const auth = async (credentials) => {
 
 export const getUser = async () => {
     try {
-        const response = await api.get('/me',{
+        const response = await api.get('/users/me',{
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             }

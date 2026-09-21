@@ -1,3 +1,6 @@
+import { useState, useRef, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import Input from "../../components/Inputs/Input";
 import Button from "../../components/Buttons/Button";
 import ButtonGoogle from "../../components/Buttons/ButtonGoogle";
@@ -5,6 +8,39 @@ import loginImage from "../../assets/login-image.png";
 import PasswordInput from "../../components/Inputs/PasswordInput";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const {login} = useAuth();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    
+    try{
+      const response = await login(formData);
+
+      if(response){
+        navigate("/");
+      }else{
+        console.log("Login failed: " + response.error);
+      }
+    }catch(error){
+      console.error("Error during login: ", error);
+    }
+  }
+
+  const handleChange = (e) => {
+      setFormData({
+          ...formData,
+          [e.target.name]: e.target.value,
+      })
+  }
+
+  console.log(formData);
+
   return (
     <main className="flex min-h-[100dvh] w-full bg-[url('/background.png')] bg-cover bg-center font-intel-one-mono">
       <section className="flex w-1/2 flex-col items-center justify-center px-10">
@@ -39,12 +75,13 @@ export default function Login() {
             </a>
           </p>
 
-          <form className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
             <Input
               label="E-mail"
               type="email"
               placeholder="Insira o seu e-mail"
               name="email"
+              onChange={handleChange}
               text_color="white"
             />
 
@@ -52,6 +89,7 @@ export default function Login() {
               label="Senha"
               placeholder="Insira a sua senha"
               name="password"
+              onChange={handleChange}
               text_color="white"
             />
 

@@ -22,7 +22,7 @@ export default function App() {
 
           <Route path="/" element={<PrivateRoute />}>
             <Route index element={<Home />} />
-            <Route path="ajuda" element={<Ajuda />} />
+            <Route path="/ajuda" element={<Ajuda />} />
           </Route>
 
         </Routes>
