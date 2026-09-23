@@ -9,7 +9,10 @@ import PasswordInput from "../../components/Inputs/PasswordInput";
 
 export default function Login() {
   const navigate = useNavigate();
-  const {login} = useAuth();
+  const {login, googleLogin} = useAuth();
+  const {search} = useLocation();
+  const params = new URLSearchParams(search);
+  const hasSentCode = useRef(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -30,6 +33,34 @@ export default function Login() {
     }catch(error){
       console.error("Error during login: ", error);
     }
+  }
+
+  useEffect(() => {
+      const code = params.get('token');
+      if (!code) return;
+      if (hasSentCode.current) return;
+
+      hasSentCode.current = true;
+      console.log(code);
+      const authGoogle = async () => {
+        try {
+          const response = await googleLogin(code);
+
+          if(response){
+            navigate("/");
+          }else{
+            console.log("Google login failed: " + response.error);
+          }
+        }catch (error) {
+          console.error("Error during Google login: ", error);
+        }
+      }
+
+      authGoogle();
+  }, [search]);
+
+  const sendToGoogleAuth = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
   }
 
   const handleChange = (e) => {
@@ -120,7 +151,7 @@ export default function Login() {
           </div>
 
           <div className="flex justify-center">
-            <ButtonGoogle />
+            <ButtonGoogle onClick={sendToGoogleAuth} />
           </div>
         </div>
       </section>
