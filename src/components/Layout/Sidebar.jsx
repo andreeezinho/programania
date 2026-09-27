@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import Button from '../Buttons/Button'
+import logoutIcon from '../../assets/Logout Icon.png'
 
 const menuItems = [
   { to: '/', label: 'Home', icon: 
@@ -102,7 +103,7 @@ const Sidebar = ({ handleLogout }) => {
           </NavLink>
         ))}
 
-        <Button text="Sair" style={styles.logoutButton} onClick={handleLogout} className="mt-auto rounded-xl bg-[#F2635D] px-4 py-2 text-sm font-bold text-white shadow-md cursor-pointer transition hover:bg-[#e55a50] text-start" />
+        <Button text="Sair" icon={<img src={logoutIcon} alt="" className="h-[18px] w-[18px] shrink-0 object-contain" />} style={styles.logoutButton} onClick={handleLogout} className="mt-auto flex items-center gap-2 rounded-xl bg-[#F2635D] px-4 py-2 text-sm font-bold text-white shadow-md cursor-pointer transition hover:bg-[#e55a50] text-start" />
       </nav>
     </aside>
   )
