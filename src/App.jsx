@@ -7,6 +7,7 @@ import Cadastro from "./pages/Cadastro/Cadastro";
 import Ajuda from "./pages/Ajuda/ajuda";
 import Perfil from "./pages/Perfil/Perfil";
 import MinhasFases from "./pages/Fases/MinhasFases";
+import Fases from "./pages/Fases/Fases";
 
 export default function App() {
   return(
@@ -24,6 +25,7 @@ export default function App() {
 
           <Route path="/" element={<PrivateRoute />}>
             <Route index element={<Home />} />
+            <Route path="/fases" element={<Fases />} />
             <Route path="/ajuda" element={<Ajuda />} />
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/minhas-fases" element={<MinhasFases />} />
