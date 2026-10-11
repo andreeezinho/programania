@@ -12,7 +12,7 @@ const FINISH_CELL = TOTAL_CELLS - 1;
 export default function LabirintoCard({ onExecute, executeDisabled = false }) {
   return (
     <section
-      className="flex min-h-[660px] w-full flex-col rounded-[24px] bg-[#F7F7F7] p-3 shadow-[0_5px_5px_rgba(0,0,0,0.25)] sm:p-5"
+      className="flex w-full flex-col rounded-[24px] bg-[#f8f8f6] p-3 sm:p-5"
       aria-label="Resultado do labirinto"
     >
       <h2 className="font-['Intel_One_Mono',monospace] text-[20px] font-bold text-[#768E44]">
@@ -20,7 +20,7 @@ export default function LabirintoCard({ onExecute, executeDisabled = false }) {
       </h2>
 
       <div className="flex flex-1 items-center justify-center px-2 py-6 sm:px-8">
-        <div className="grid w-full max-w-[714px] grid-cols-7 gap-[14px]">
+        <div className="grid w-full grid-cols-7 gap-2">
           {Array.from({ length: TOTAL_CELLS }, (_, index) => {
             const isStart = index === START_CELL;
             const isFinish = index === FINISH_CELL;

@@ -26,14 +26,10 @@ export default function Fases() {
         <Sidebar handleLogout={logout} />
         <section className="min-w-0 flex-1 px-6 py-7 md:px-12 md:py-8 bg-[#f8f8f6] rounded-2xl">
           <header className="mb-8 border-b border-[#b9bbaa] pb-2 text-sm font-bold">
-            <h1>Fases</h1>
+            <h1>Fases Disponíveis</h1>
           </header>
 
-          <Banner />
-
-          <div className="my-5 h-px w-full bg-[#a6b583]" />
-
-          <div className="mb-7 flex justify-center">
+          <div className="mb-20 flex justify-center">
             <InputSearch
               type="search"
               name="search"
@@ -41,10 +37,6 @@ export default function Fases() {
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
-
-          <h2 className="mb-4 text-sm font-bold tracking-wide text-[#718548]">
-            Fases Disponíveis
-          </h2>
 
           {filteredPhases.length > 0 ? (
             <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">

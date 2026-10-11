@@ -14,11 +14,11 @@ export default function CardPhase({
   const Container = onDetails ? 'button' : Link;
   return (
     <Container
-      {...(onDetails ? { type: "button", onClick: onDetails } : { to: `/phases/${uuid}` })}
-      className="block w-full max-w-[260px] text-left cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#78933f]"
+      {...(onDetails ? { type: "button", onClick: onDetails } : { to: `/fases/${uuid}` })}
+      className="block w-full max-w-[300px] text-left cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#78933f]"
       {...props}
     >
-      <div className="flex min-h-[130px] overflow-hidden rounded-md border border-[#deded8] bg-white shadow-[0_3px_4px_rgba(0,0,0,0.18)] transition hover:shadow-md">
+      <div className="flex min-h-[130px] overflow-hidden rounded-md border border-[#deded8] bg-white shadow-[0_3px_4px_rgba(0,0,0,0.18)] transition hover:shadow-md p-2">
         <div className="w-[82px] shrink-0 bg-[#f2f2ef]">
           {image && (
             <img
