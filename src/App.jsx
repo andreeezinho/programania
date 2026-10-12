@@ -10,10 +10,13 @@ import MinhasFases from "./pages/Fases/MinhasFases";
 import Fases from "./pages/Fases/Fases";
 import FaseDetalhes from "./pages/Fases/FaseDetalhes";
 import Desafio from "./pages/Desafio/Desafio";
+import { Toaster } from 'sonner';
 
 export default function App() {
   return(
     <>
+      <Toaster position='top-right' richColors/>
+
       <Router>
         <Routes>
 

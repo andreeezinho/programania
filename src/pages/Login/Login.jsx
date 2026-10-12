@@ -60,7 +60,7 @@ export default function Login() {
   }, [search]);
 
   const sendToGoogleAuth = () => {
-    window.location.href = "https://programania-api.onrender.com//oauth2/authorization/google";
+    window.location.href = "https://programania-api.onrender.com/oauth2/authorization/google";
   }
 
   const handleChange = (e) => {
