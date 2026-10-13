@@ -7,8 +7,8 @@ import BlocoFor from "../../components/Blocos/BlocoFor";
 import ForContinue from "../../components/Blocos/ForContinue";
 import ForPare from "../../components/Blocos/ForPare";
 import BlocoWhile from "../../components/Blocos/BlocoWhile";
-import WhileContinue from "../../components/Blocos/WhilePare";
-import WhilePare from "../../components/Blocos/WhileContinue";
+import WhileContinue from "../../components/Blocos/WhileContinue";
+import WhilePare from "../../components/Blocos/WhilePare";
 import BlocoIf from "../../components/Blocos/BlocoIf";
 import BlocoElse from "../../components/Blocos/BlocoElse";
 import BlocoEsquerda from "../../components/Blocos/BlocoEsquerda";
@@ -32,6 +32,25 @@ const ComponentesBloco = {
     baixo: BlocoBaixo,
 };
 
+function gerarRepresentacao({ tipo, valor, condicao }) {
+    const expressao = condicao === "teste" ? "teste" : "algoAcontecer";
+
+    const linhas = {
+        for: `for (let i = 0; i < ${Math.max(0, Number(valor) || 0)}; i++) {`,
+        while: `while (${expressao}) {`,
+        if: `if (${expressao}) {`,
+        esquerda: "posicao += -1; // esquerda",
+        direita: "posicao += 1; // direita",
+        cima: "posicao += -7; // cima",
+        baixo: "posicao += 7; // baixo",
+        forContinue: "continue;",
+        whileContinue: "continue;",
+        forPare: "break;",
+        whilePare: "break;",
+    };
+
+    return linhas[tipo] ?? "";
+}
 function BlocoArrastavel({ tipo, className = "w-full", children }) {
     return (
         <div
@@ -47,10 +66,84 @@ function BlocoArrastavel({ tipo, className = "w-full", children }) {
     );
 }
 
-export default function Desafio(){
+function gerarCodigo(blocos) {
+    const linhas = [];
+    const escopos = [];
+    let indentacao = 0;
+
+    function fecharEscopo() {
+        escopos.pop();
+        indentacao--;
+        linhas.push(`${"    ".repeat(indentacao)}}`);
+    }
+
+    for (const bloco of blocos) {
+        if (bloco.tipo === "else") {
+            const indiceIf = escopos.lastIndexOf("if");
+
+            if (indiceIf === -1) continue;
+
+            while (escopos.length - 1 > indiceIf) {
+                fecharEscopo();
+            }
+
+            fecharEscopo();
+            linhas.push(`${"    ".repeat(indentacao)}} else {`);
+            escopos.push("else");
+            indentacao++;
+            continue;
+        }
+
+        if (bloco.tipo === "forPare" || bloco.tipo === "whilePare") {
+            const tipoLoop = bloco.tipo === "forPare" ? "for" : "while";
+            let indiceLoop = -1;
+
+            for (let i = escopos.length - 1; i >= 0; i--) {
+                if (escopos[i] === tipoLoop) {
+                    indiceLoop = i;
+                    break;
+                }
+            }
+
+            if (indiceLoop !== -1) {
+                while (escopos.length > indiceLoop) {
+                    fecharEscopo();
+                }
+            }
+
+            continue;
+        }
+
+        const representacao = gerarRepresentacao(bloco);
+        if (!representacao) continue;
+
+        linhas.push(`${"    ".repeat(indentacao)}${representacao}`);
+
+        if (["for", "while", "if"].includes(bloco.tipo)) {
+            escopos.push(bloco.tipo);
+            indentacao++;
+        }
+    }
+
+    while (escopos.length > 0) {
+        fecharEscopo();
+    }
+
+    return linhas.join("\n");
+}
+
+export default function Desafio() {
     const { logout } = useAuth();
-    const {uuid, desafioUuid} = useParams();
+    const { uuid, desafioUuid } = useParams();
     const [codigo, setCodigo] = useState([]);
+
+    function atualizarBloco(id, campo, valor) {
+        setCodigo((blocos) =>
+            blocos.map((bloco) =>
+                bloco.id === id ? { ...bloco, [campo]: valor } : bloco
+            )
+        );
+    }
 
     function adicionarBloco(event, destinoId = null) {
         event.preventDefault();
@@ -80,7 +173,12 @@ export default function Desafio(){
         const tipo = event.dataTransfer.getData("application/x-bloco");
         if (!ComponentesBloco[tipo]) return;
 
-        const novoBloco = { id: `${Date.now()}-${Math.random()}`, tipo };
+        const novoBloco = {
+            id: `${Date.now()}-${Math.random()}`,
+            tipo,
+            ...(tipo === "for" ? { valor: "1" } : {}),
+            ...(["while", "if"].includes(tipo) ? { condicao: "evento" } : {}),
+        };
 
         setCodigo((blocos) => {
             if (!destinoId) return [...blocos, novoBloco];
@@ -161,12 +259,12 @@ export default function Desafio(){
                             </div>
                         </div>
                         <div className="flex flex-col w-1/2 p-8 pt-6 gap-y-8">
-                            <div className="px-28 py-0 shadow-[0_5px_5px_rgba(0,0,0,0.25)] rounded-lg">
-                                <LabirintoCard />
+                            <div className="py-0 shadow-[0_5px_5px_rgba(0,0,0,0.25)] rounded-lg">
+                                <LabirintoCard codigo={codigo} />
                             </div>
 
-                            <div className="w-full p-3 rounded-lg bg-[#F3F3F3] shadow-[0_5px_5px_rgba(0,0,0,0.25)] h-full">
-                                <div className="flex itens-center justify-between py-0">
+                            <div className="flex w-full flex-col rounded-lg bg-[#F3F3F3] p-3 shadow-[0_5px_5px_rgba(0,0,0,0.25)] h-full">
+                                <div className="flex shrink-0 items-center justify-between py-0">
                                     <h3 className="text-lg mb-5 text-start font-bold text-[#768E44] py-0">Seu código:</h3>
                                     <button
                                         type="button"
@@ -189,14 +287,20 @@ export default function Desafio(){
                                 <div
                                     onDragOver={(event) => event.preventDefault()}
                                     onDrop={adicionarBloco}
-                                    className="flex min-h-[240px] flex-col gap-y-3"
+                                    className="flex w-full flex-1 flex-col gap-y-3"
                                 >
-                                    {codigo.map(({ id, tipo }) => {
+                                    {codigo.map(({ id, tipo, valor, condicao }) => {
                                         const Bloco = ComponentesBloco[tipo];
+                                        const campo = tipo === "for" ? "valor" : "condicao";
 
                                         return (
                                             <div key={id} className="relative min-w-0">
-                                                <Bloco />
+                                                <Bloco
+                                                    value={tipo === "for" ? valor : condicao}
+                                                    onChange={(event) =>
+                                                        atualizarBloco(id, campo, event.target.value)
+                                                    }
+                                                />
 
                                                 <button
                                                     type="button"
@@ -222,6 +326,10 @@ export default function Desafio(){
                                         );
                                     })}
                                 </div>
+
+                                {console.log(codigo.length
+                                        ? gerarCodigo(codigo)
+                                        : "// Arraste blocos para montar o código")}
                             </div>
                         </div>
                     </div>
