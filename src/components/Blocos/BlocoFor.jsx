@@ -5,7 +5,7 @@ export default function BlocoFor({ value = "1", onChange }) {
             <input
                 type="number"
                 min="0"
-                value={value}
+                defaultValue={value}
                 onChange={onChange}
                 className="w-[50px] text-white border border-white bg-[#DE782C] shadow-md rounded-md focus:outline-none px-1"
             />
