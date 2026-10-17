@@ -15,3 +15,17 @@ export const getFase = async (params) => {
         throw error;
     }
 };
+
+export const getFaseByUuid = async (uuid) => {
+    try{
+        const response = await api.get(`/phases/${uuid}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            }
+        });
+        return response.data;
+    }catch(error){
+        console.log("Erro ao buscar fase: ", error);
+        throw error;
+    }
+};

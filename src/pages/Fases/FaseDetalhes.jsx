@@ -1,18 +1,35 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Sidebar from "../../components/Layout/Sidebar";
 import PcImage from "../../assets/pc-image.png";
-
-const fases = Array.from({ length: 8 }, (_, index) => ({
-    numero: index + 1,
-    nome: index === 0 ? "Desafio 1" : `Fase ${index + 1}`,
-    status: index === 0 ? "Em andamento" : "Não iniciado",
-    emAndamento: index === 0,
-}));
+import { getDesafiosFromFase } from "../../services/Desafio/DesafioService";
+import { getFaseByUuid } from "../../services/Fase/FaseService";
 
 export default function FaseDetalhes() {
+    const {uuid} = useParams();
     const { logout } = useAuth();
+    const [loading, setLoading] = useState(true);
+    const [fase, setFase] = useState(null);
+    const [desafios, setDesafios] = useState(null);
 
+    const getFase = async () => {
+        const response = await getFaseByUuid(uuid);
+        setFase(response);
+    }
+
+    const list = async () => {
+        const response = await getDesafiosFromFase(uuid);
+        setDesafios(response.content);
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        getFase();
+        list();
+    }, []);
+
+    console.log(desafios);
     return (
         <main className="min-h-screen bg-[url('/background.png')] p-0 font-mono text-[#6f7759] md:p-2">
             <div className="flex min-h-[calc(100vh-1rem)] gap-3 md:rounded-md">
@@ -21,7 +38,7 @@ export default function FaseDetalhes() {
                 <section className="min-w-0 flex-1 rounded-2xl bg-[#f8f8f6] px-5 py-7 md:px-8 md:py-8">
                     <header className="border-b border-[#9aa77a] pb-2">
                         <h1 className="text-sm font-bold tracking-wide">
-                            Nome da Fase - {"{Dificuldade}"}
+                            {fase?.nome} - {fase?.numero}
                         </h1>
                     </header>
 
@@ -37,11 +54,7 @@ export default function FaseDetalhes() {
                         <div>
                             <h2 className="mb-2 text-lg font-bold">Descrição</h2>
                             <p className="text-justify text-sm w-lg">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                Aliquam mollis nunc at diam consequat, vitae ultricies justo
-                                dignissim. Pellentesque eget urna commodo, maximus elit quis,
-                                aliquet quam. Aenean lacinia semper ultrices. Maecenas dapibus
-                                laoreet turpis, id rutrum nulla laoreet vitae.
+                                {fase?.descricao}
                             </p>
                         </div>
                     </div>
@@ -55,23 +68,20 @@ export default function FaseDetalhes() {
                         </h2>
 
                         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 sm:grid-cols-3 md:gap-5 lg:grid-cols-4">
-                            {fases.map((fase) => (
-                                <Link to={`/fases/${fase.numero}/desafio/${fase.numero}`}
-                                // <Link to={`/fases/${fases.uuid}/desafio/${desafio.uuid}`}
-                                    key={fase.numero}
+                            {desafios?.map((desafio) => (
+                                <Link to={`/fases/${uuid}/desafio/${desafio.uuid}`}
+                                    key={desafio.uuid}
                                     className="relative flex min-h-42 flex-col rounded-2xl bg-white px-4 pb-3 pt-10 shadow-md"
                                 >
                                     <span className="absolute left-2 top-2 flex size-8 items-center justify-center rounded-full bg-[#7c9546] text-sm font-bold text-white shadow">
-                                        {fase.numero}
+                                        {desafio.numero}
                                     </span>
 
-                                    <h3 className="text-start text-xs font-bold mt-4">Desafio {fase.numero}</h3>
+                                    <h3 className="text-start text-xs font-bold mt-4">Desafio {desafio.numero}</h3>
                                     <p
-                                        className={`text-start text-[10px] ${
-                                            fase.emAndamento ? "text-amber-500" : "text-red-500"
-                                        }`}
+                                        className={`text-start text-[10px] text-amber-500 mt-2`}
                                     >
-                                        {fase.status}
+                                        {desafio.nome}
                                     </p>
 
                                     <button
