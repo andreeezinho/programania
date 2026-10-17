@@ -1,29 +1,44 @@
 
-import { useState, useContext } from "react";
-
+import { useState, useContext, useEffect} from "react";
 import { AuthContext } from "../../context/AuthContext";
-
 import Sidebar from "../../components/Layout/Sidebar";
 import Banner from "../../components/Banners/BannerHome";
 import InputSearch from "../../components/Inputs/InputSearch";
 import CardPhase from "../../components/Cards/CardPhase";
+import { getFase } from "../../services/Fase/FaseService";
 
-const mockPhases = Array.from({ length: 9 }, (_, index) => ({
-  uuid: index + 1,
-  name: `Nome da Fase ${index + 1}`,
-  amount: 0,
-  image: "",
-}));
-
-export default function Home({ phases = mockPhases }) {
+export default function Home() {
   const { logout } = useContext(AuthContext);
-  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [fases, setFases] = useState(null);
+  const [params, setParams] = useState({
+    nome: ""
+  });
 
-  const filteredPhases = phases.filter((phase) =>
-    (phase.name || "")
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  const list = async (params) => {
+    const response = await getFase(params);
+    setFases(response);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    list();
+  }, []);
+
+  const handleChange = (e) => {
+      setParams({
+          ...params,
+          [e.target.name]: e.target.value,
+      })
+
+      if(params?.nome.length >= 3){
+          list(params);
+      }else{
+          list();
+      }
+  }
+
+  console.log(fases);
 
   return (
     <main className="min-h-screen bg-[url('/background.png')] p-0 font-mono text-[#6f7759] md:p-2">
@@ -33,38 +48,31 @@ export default function Home({ phases = mockPhases }) {
 
         <section className="min-w-0 flex-1 px-6 py-7 md:px-12 md:py-8 bg-[#f8f8f6] rounded-2xl">
 
-          {/* Banner do protótipo */}
           <Banner />
 
-          {/* Linha divisória */}
           <div className="my-5 h-px w-full bg-[#a6b583]" />
 
-          {/* Pesquisa */}
           <div className="mb-7 flex justify-center">
             <InputSearch
-              type="search"
-              name="search"
+              type="text"
+              name="nome"
+              value={params.nome}
               placeholder="Procure por uma fase..."
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
+              onChange={handleChange}
             />
           </div>
 
-          {/* Fases disponíveis */}
           <h2 className="mb-4 text-sm font-bold tracking-wide text-[#718548]">
             Fases Disponíveis
           </h2>
 
-          {/* Cards */}
           <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">
-            {filteredPhases.map((phase) => (
+            {fases?.map((fase) => (
               <CardPhase
-                key={phase.uuid}
-                uuid={phase.uuid}
-                name={phase.name}
-                amount={phase.amount}
-                image={phase.image}
+                key={fase.uuid}
+                uuid={fase.uuid}
+                name={fase.nome}
+                amount={fase.numero}
               />
             ))}
           </div>

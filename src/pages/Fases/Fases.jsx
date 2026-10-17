@@ -1,24 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import Sidebar from "../../components/Layout/Sidebar";
 import Banner from "../../components/Banners/BannerHome";
 import InputSearch from "../../components/Inputs/InputSearch";
 import CardPhase from "../../components/Cards/CardPhase";
-
-const phases = Array.from({ length: 9 }, (_, index) => ({
-  uuid: index + 1,
-  name: `Nome da Fase ${index + 1}`,
-  amount: 0,
-  image: "",
-}));
+import { getFase } from "../../services/Fase/FaseService";
 
 export default function Fases() {
   const { logout } = useAuth();
-  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [fases, setFases] = useState(null);
+  const [params, setParams] = useState({
+    nome: ""
+  });
 
-  const filteredPhases = phases.filter((phase) =>
-    phase.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const list = async (params) => {
+    const response = await getFase(params);
+    setFases(response);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    list();
+  }, []);
+
+  const handleChange = (e) => {
+      setParams({
+          ...params,
+          [e.target.name]: e.target.value,
+      })
+
+      if(params?.nome.length >= 3){
+          list(params);
+      }else{
+          list();
+      }
+  }
+
+  console.log(fases);
 
   return (
     <main className="min-h-screen bg-[url('/background.png')] p-0 font-mono text-[#6f7759] md:p-2">
@@ -31,30 +50,24 @@ export default function Fases() {
 
           <div className="mb-20 flex justify-center">
             <InputSearch
-              type="search"
-              name="search"
+              type="text"
+              name="nome"
+              value={params.nome}
               placeholder="Procure por uma fase..."
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={handleChange}
             />
           </div>
 
-          {filteredPhases.length > 0 ? (
-            <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">
-              {filteredPhases.map((phase) => (
-                <CardPhase
-                  key={phase.uuid}
-                  uuid={phase.uuid}
-                  name={phase.name}
-                  amount={phase.amount}
-                  image={phase.image}
-                />
-              ))}
-            </div>
-          ) : (
-            <p role="status" className="mt-10 text-center text-sm text-[#77796f]">
-              Nenhuma fase encontrada.
-            </p>
-          )}
+          <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">
+            {fases?.map((fase) => (
+              <CardPhase
+                key={fase.uuid}
+                uuid={fase.uuid}
+                name={fase.nome}
+                amount={fase.numero}
+              />
+            ))}
+          </div>
         </section>
       </div>
     </main>
