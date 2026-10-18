@@ -1,6 +1,6 @@
 import { useAuth } from "../../hooks/useAuth";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Sidebar from "../../components/Layout/Sidebar";
 import BlocoFor from "../../components/Blocos/BlocoFor";
@@ -16,7 +16,7 @@ import BlocoDireita from "../../components/Blocos/BlocoDireita";
 import BlocoCima from "../../components/Blocos/BlocoCIma";
 import BlocoBaixo from "../../components/Blocos/BlocoBaixo";
 import LabirintoCard from "../../components/Desafio/LabirintoCard";
-import { getBlocosFromDesafio } from "../../services/Desafio/DesafioService";
+import { getBlocosFromDesafio, getDesafio } from "../../services/Desafio/DesafioService";
 
 const ComponentesBloco = {
     for: BlocoFor,
@@ -58,8 +58,34 @@ function BlocoArrastavel({ tipo, className = "w-full", children }) {
         <div
             draggable
             onDragStart={(event) => {
-                event.dataTransfer.setData("application/x-bloco", tipo);
-                event.dataTransfer.effectAllowed = "copy";
+                const { dataTransfer, currentTarget } = event;
+
+                dataTransfer.setData("application/x-bloco", tipo);
+                dataTransfer.effectAllowed = "copy";
+
+                const rect = currentTarget.getBoundingClientRect();
+                const imagemArraste = currentTarget.cloneNode(true);
+
+                Object.assign(imagemArraste.style, {
+                    position: "fixed",
+                    top: "0",
+                    left: "-10000px",
+                    width: `${rect.width}px`,
+                    margin: "0",
+                    overflow: "hidden",
+                    borderRadius: "0.5rem",
+                    pointerEvents: "none",
+                });
+
+                document.body.appendChild(imagemArraste);
+
+                dataTransfer.setDragImage(
+                    imagemArraste,
+                    event.clientX - rect.left,
+                    event.clientY - rect.top
+                );
+
+                setTimeout(() => imagemArraste.remove(), 0);
             }}
             className={`cursor-grab ${className}`}
         >
@@ -136,10 +162,18 @@ function gerarCodigo(blocos) {
 
 export default function Desafio() {
     const { logout } = useAuth();
+    const navigate = useNavigate();
     const { uuid, desafioUuid } = useParams();
+    const [desafio, setDesafio] = useState(null);
     const [codigo, setCodigo] = useState([]);
     const [loading, setLoading] = useState(true);
     const [blocos, setBlocos] = useState(null);
+
+    const findDesafio = async () => {
+        const response = await getDesafio(desafioUuid);
+        console.log(response);
+        setDesafio(response);
+    }
 
     const list = async () => {
         const response = await getBlocosFromDesafio(desafioUuid);
@@ -204,6 +238,7 @@ export default function Desafio() {
     }
 
     useEffect(() => {
+        findDesafio();
         list();
     }, []);
 
@@ -212,17 +247,23 @@ export default function Desafio() {
             <div className="flex min-h-[calc(100vh-2rem)] md:rounded-md">
                 <Sidebar handleLogout={logout} />
                 <section className="flex min-w-0 flex-1 flex-col rounded-2xl bg-[#f8f8f6] px-6 py-7 md:px-12 md:py-8">
+                    <header className="border-b border-[#9aa77a]">
+                        <button type="button" onClick={() => {navigate(-1)}} className="text-sm font-bold tracking-wide flex gap-x-2 p-1 mb-1 rounded-lg cursor-pointer hover:bg-[#ececec]">
+                            <svg fill="#6f7759" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve" className="w-4">
+                                <path d="M48.6,23H15.4c-0.9,0-1.3-1.1-0.7-1.7l9.6-9.6c0.6-0.6,0.6-1.5,0-2.1l-2.2-2.2c-0.6-0.6-1.5-0.6-2.1,0
+                                    L2.5,25c-0.6,0.6-0.6,1.5,0,2.1L20,44.6c0.6,0.6,1.5,0.6,2.1,0l2.1-2.1c0.6-0.6,0.6-1.5,0-2.1l-9.6-9.6C14,30.1,14.4,29,15.3,29
+                                    h33.2c0.8,0,1.5-0.6,1.5-1.4v-3C50,23.8,49.4,23,48.6,23z"/>
+                            </svg>
+                            {desafio?.nome}
+                        </button>
+                    </header>
                     <div className="flex w-full flex-1 min-h-0">
                         <div className="flex w-1/2 min-h-0 flex-col gap-y-10 p-8">
-                            <div className="w-full p-3 rounded-lg bg-[#F3F3F3] text-[#768E44] pb-20 shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+                            <div className="w-full p-3 rounded-lg bg-[#F3F3F3] text-[#768E44] pb-10 shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
                                 <h3 className="text-lg mb-5 text-start font-bold">O que fazer:</h3>
 
                                 <p className="text-justify text-sm ">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    Aliquam mollis nunc at diam consequat, vitae ultricies justo
-                                    dignissim. Pellentesque eget urna commodo, maximus elit quis,
-                                    aliquet quam. Aenean lacinia semper ultrices. Maecenas dapibus
-                                    laoreet turpis, id rutrum nulla laoreet vitae.
+                                    {desafio?.descricao}
                                 </p>
                             </div>
 
@@ -305,7 +346,7 @@ export default function Desafio() {
                         </div>
                         <div className="flex flex-col w-1/2 p-8 pt-6 gap-y-8">
                             <div className="py-0 shadow-[0_5px_5px_rgba(0,0,0,0.25)] rounded-lg">
-                                <LabirintoCard codigo={codigo} />
+                                <LabirintoCard codigo={codigo} desafio={desafio} />
                             </div>
 
                             <div className="flex w-full flex-col rounded-lg bg-[#F3F3F3] p-3 shadow-[0_5px_5px_rgba(0,0,0,0.25)] h-full">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import Sidebar from "../../components/Layout/Sidebar";
 import PcImage from "../../assets/pc-image.png";
 import { getDesafiosFromFase } from "../../services/Desafio/DesafioService";
@@ -8,6 +8,7 @@ import { getFaseByUuid } from "../../services/Fase/FaseService";
 
 export default function FaseDetalhes() {
     const {uuid} = useParams();
+    const navigate = useNavigate();
     const { logout } = useAuth();
     const [loading, setLoading] = useState(true);
     const [fase, setFase] = useState(null);
@@ -36,10 +37,15 @@ export default function FaseDetalhes() {
                 <Sidebar handleLogout={logout} />
 
                 <section className="min-w-0 flex-1 rounded-2xl bg-[#f8f8f6] px-5 py-7 md:px-8 md:py-8">
-                    <header className="border-b border-[#9aa77a] pb-2">
-                        <h1 className="text-sm font-bold tracking-wide">
+                    <header className="border-b border-[#9aa77a]">
+                        <button type="button" onClick={() => {navigate(-1)}} className="text-sm font-bold tracking-wide flex gap-x-2 p-1 mb-1 rounded-lg cursor-pointer hover:bg-[#ececec]">
+                            <svg fill="#6f7759" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve" className="w-4">
+                                <path d="M48.6,23H15.4c-0.9,0-1.3-1.1-0.7-1.7l9.6-9.6c0.6-0.6,0.6-1.5,0-2.1l-2.2-2.2c-0.6-0.6-1.5-0.6-2.1,0
+                                    L2.5,25c-0.6,0.6-0.6,1.5,0,2.1L20,44.6c0.6,0.6,1.5,0.6,2.1,0l2.1-2.1c0.6-0.6,0.6-1.5,0-2.1l-9.6-9.6C14,30.1,14.4,29,15.3,29
+                                    h33.2c0.8,0,1.5-0.6,1.5-1.4v-3C50,23.8,49.4,23,48.6,23z"/>
+                            </svg>
                             {fase?.nome} - {fase?.numero}
-                        </h1>
+                        </button>
                     </header>
 
                     <div className="grid items-center gap-8 py-8 md:grid-cols-2 md:px-8">

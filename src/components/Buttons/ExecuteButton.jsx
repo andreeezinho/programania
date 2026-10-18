@@ -1,6 +1,5 @@
 import vectorIcon from '../../assets/Vector.png';
 
-/** Botão reutilizável para iniciar a execução de um desafio. */
 export default function ExecuteButton({ onClick, disabled = false }) {
   return (
     <button

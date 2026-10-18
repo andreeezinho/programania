@@ -1,12 +1,11 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import catImage from "../../assets/image 6.png";
 import canImage from "../../assets/image 7.png";
 import ExecuteButton from "../Buttons/ExecuteButton";
+import RestartButton from "../Buttons/RestartButton";
 
 const TOTAL_CELLS = 28;
 const COLUMNS = 7;
-const START_CELL = 0;
-const FINISH_CELL = TOTAL_CELLS - 1;
 const STEP_DELAY_MS = 1000;
 const MAX_WHILE_ITERATIONS = 100;
 
@@ -77,11 +76,22 @@ export default function LabirintoCard({
   style,
   boardClassName = "",
   boardStyle,
+  desafio
 }) {
+  const START_CELL = desafio?.startCell;
+  const FINISH_CELL = desafio?.finishCell;
   const [posicao, setPosicao] = useState(START_CELL);
   const [executando, setExecutando] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const posicaoAtual = useRef(START_CELL);
+
+  useEffect(() => {
+    if (START_CELL == null) return;
+
+    const inicio = Number(START_CELL);
+    setPosicao(inicio);
+    posicaoAtual.current = inicio;
+  }, [START_CELL]);
 
   async function executarBlocos() {
     if (executando || executeDisabled) return;
@@ -229,7 +239,11 @@ export default function LabirintoCard({
         </p>
       )}
 
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <RestartButton
+          onClick={() => {setPosicao(START_CELL)}}
+          disabled={executeDisabled || executando}
+        />
         <ExecuteButton
           onClick={executarBlocos}
           disabled={executeDisabled || executando}
