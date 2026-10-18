@@ -1,5 +1,5 @@
 import { useAuth } from "../../hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Sidebar from "../../components/Layout/Sidebar";
@@ -16,6 +16,7 @@ import BlocoDireita from "../../components/Blocos/BlocoDireita";
 import BlocoCima from "../../components/Blocos/BlocoCIma";
 import BlocoBaixo from "../../components/Blocos/BlocoBaixo";
 import LabirintoCard from "../../components/Desafio/LabirintoCard";
+import { getBlocosFromDesafio } from "../../services/Desafio/DesafioService";
 
 const ComponentesBloco = {
     for: BlocoFor,
@@ -51,6 +52,7 @@ function gerarRepresentacao({ tipo, valor, condicao }) {
 
     return linhas[tipo] ?? "";
 }
+
 function BlocoArrastavel({ tipo, className = "w-full", children }) {
     return (
         <div
@@ -136,6 +138,15 @@ export default function Desafio() {
     const { logout } = useAuth();
     const { uuid, desafioUuid } = useParams();
     const [codigo, setCodigo] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [blocos, setBlocos] = useState(null);
+
+    const list = async () => {
+        const response = await getBlocosFromDesafio(desafioUuid);
+        console.log(response);
+        setBlocos(response);
+        setLoading(false);
+    }
 
     function atualizarBloco(id, campo, valor) {
         setCodigo((blocos) =>
@@ -192,13 +203,17 @@ export default function Desafio() {
         });
     }
 
+    useEffect(() => {
+        list();
+    }, []);
+
     return(
         <main className="min-h-screen bg-[url('/background.png')] p-0 font-mono text-[#6f7759] md:p-2">
             <div className="flex min-h-[calc(100vh-2rem)] md:rounded-md">
                 <Sidebar handleLogout={logout} />
-                <section className="min-w-0 flex-1 px-6 py-7 md:px-12 md:py-8 bg-[#f8f8f6] rounded-2xl">
-                    <div className="flex w-full">
-                        <div className="flex flex-col gap-y-10 w-1/2 p-8 rounded-lg">
+                <section className="flex min-w-0 flex-1 flex-col rounded-2xl bg-[#f8f8f6] px-6 py-7 md:px-12 md:py-8">
+                    <div className="flex w-full flex-1 min-h-0">
+                        <div className="flex w-1/2 min-h-0 flex-col gap-y-10 p-8">
                             <div className="w-full p-3 rounded-lg bg-[#F3F3F3] text-[#768E44] pb-20 shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
                                 <h3 className="text-lg mb-5 text-start font-bold">O que fazer:</h3>
 
@@ -211,50 +226,80 @@ export default function Desafio() {
                                 </p>
                             </div>
 
-                            <div className="w-full p-3 rounded-lg bg-[#F3F3F3] shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+                            <div className="flex w-full flex-1 min-h-0 flex-col rounded-lg bg-[#F3F3F3] p-3 shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
                                 <h3 className="text-lg mb-5 text-start font-bold text-[#768E44]">Blocos (Códigos):</h3>
 
                                 <div className="flex flex-col w-full gap-y-4">
-                                    <BlocoArrastavel tipo="for">
-                                        <BlocoFor />
-                                    </BlocoArrastavel>
+                                    {blocos?.map((bloco) => {
+                                        if(bloco.bloco.tipo == "for"){
+                                            return(
+                                                <BlocoArrastavel tipo="for">
+                                                    <BlocoFor />
+                                                </BlocoArrastavel>
+                                            );
+                                        }   
 
-                                    <div className="flex gap-x-4">
-                                        <BlocoArrastavel tipo="forContinue" className="flex-1 min-w-0">
-                                            <ForContinue />
-                                        </BlocoArrastavel>
-                                        <BlocoArrastavel tipo="forPare" className="flex-1 min-w-0">
-                                            <ForPare />
-                                        </BlocoArrastavel>
-                                    </div>
+                                        if(bloco.bloco.tipo == "forPare"){
+                                            return(
+                                                <div className="flex gap-x-4">
+                                                    <BlocoArrastavel tipo="forContinue" className="flex-1 min-w-0">
+                                                        <ForContinue />
+                                                    </BlocoArrastavel>
+                                                    <BlocoArrastavel tipo="forPare" className="flex-1 min-w-0">
+                                                        <ForPare />
+                                                    </BlocoArrastavel>
+                                                </div>
+                                            );
+                                        } 
 
-                                    <BlocoArrastavel tipo="while">
-                                        <BlocoWhile />
-                                    </BlocoArrastavel>
+                                        if(bloco.bloco.tipo == "while"){
+                                            return(
+                                                <BlocoArrastavel tipo="while">
+                                                    <BlocoWhile />
+                                                </BlocoArrastavel>
+                                            );
+                                        } 
 
-                                    <div className="flex gap-x-4">
-                                        <BlocoArrastavel tipo="whileContinue" className="flex-1 min-w-0">
-                                            <WhileContinue />
-                                        </BlocoArrastavel>
-                                        <BlocoArrastavel tipo="whilePare" className="flex-1 min-w-0">
-                                            <WhilePare />
-                                        </BlocoArrastavel>
-                                    </div>
+                                        if(bloco.bloco.tipo == "whilePare"){
+                                            return(
+                                                <div className="flex gap-x-4">
+                                                    <BlocoArrastavel tipo="whileContinue" className="flex-1 min-w-0">
+                                                        <WhileContinue />
+                                                    </BlocoArrastavel>
+                                                    <BlocoArrastavel tipo="whilePare" className="flex-1 min-w-0">
+                                                        <WhilePare />
+                                                    </BlocoArrastavel>
+                                                </div>
+                                            );
+                                        } 
 
-                                    <div className="flex gap-x-4">
-                                        <BlocoArrastavel tipo="if" className="flex-1 min-w-0"><BlocoIf /></BlocoArrastavel>
-                                        <BlocoArrastavel tipo="else" className="flex-1 min-w-0"><BlocoElse /></BlocoArrastavel>
-                                    </div>
+                                        if(bloco.bloco.tipo == "if"){
+                                            return(
+                                                <div className="flex gap-x-4">
+                                                    <BlocoArrastavel tipo="if" className="flex-1 min-w-0"><BlocoIf /></BlocoArrastavel>
+                                                    <BlocoArrastavel tipo="else" className="flex-1 min-w-0"><BlocoElse /></BlocoArrastavel>
+                                                </div>
+                                            );
+                                        }
+                                        
+                                        if(bloco.bloco.tipo == "esquerda"){
+                                            return(
+                                                <div className="flex gap-x-4">
+                                                    <BlocoArrastavel tipo="esquerda" className="flex-1 min-w-0"><BlocoEsquerda /></BlocoArrastavel>
+                                                    <BlocoArrastavel tipo="direita" className="flex-1 min-w-0"><BlocoDireita /></BlocoArrastavel>
+                                                </div>
+                                            );
+                                        }
 
-                                    <div className="flex gap-x-4">
-                                        <BlocoArrastavel tipo="esquerda" className="flex-1 min-w-0"><BlocoEsquerda /></BlocoArrastavel>
-                                        <BlocoArrastavel tipo="direita" className="flex-1 min-w-0"><BlocoDireita /></BlocoArrastavel>
-                                    </div>
-
-                                    <div className="flex gap-x-4">
-                                        <BlocoArrastavel tipo="cima" className="flex-1 min-w-0"><BlocoCima /></BlocoArrastavel>
-                                        <BlocoArrastavel tipo="baixo" className="flex-1 min-w-0"><BlocoBaixo /></BlocoArrastavel>
-                                    </div>
+                                        if(bloco.bloco.tipo == "cima"){
+                                            return(
+                                                <div className="flex gap-x-4">
+                                                    <BlocoArrastavel tipo="cima" className="flex-1 min-w-0"><BlocoCima /></BlocoArrastavel>
+                                                    <BlocoArrastavel tipo="baixo" className="flex-1 min-w-0"><BlocoBaixo /></BlocoArrastavel>
+                                                </div>
+                                            );
+                                        }
+                                    })}
                                 </div>
                             </div>
                         </div>
