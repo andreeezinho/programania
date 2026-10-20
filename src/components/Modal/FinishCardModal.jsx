@@ -2,12 +2,13 @@ import { Link } from "react-router-dom";
 import catImage from "../../assets/cat.png";
 import foodImage from "../../assets/food.png";
 
-export default function FinishCardModal({ uuid, onBack }) {
+export default function FinishCardModal({ faseUuid, desafioUuid, onBack }) {
   return (
     <div className="relative w-[541px] h-[406px] rounded-[28px] bg-white shadow-lg">
       <button
         type="button"
         aria-label="Fechar modal"
+        onClick={onBack}
         className="absolute right-[36px] top-[34px] text-[22px] font-bold text-[#617832]"
       >
         X
@@ -53,7 +54,7 @@ export default function FinishCardModal({ uuid, onBack }) {
         </button>
 
         <Link
-          to={`/fase/${uuid}`}
+          to={`/fases/${faseUuid}`}
           className="w-[140px] rounded-[17px] bg-[#78943B] py-[11px] text-center text-[15px] font-bold text-white shadow-md"
         >
           Continuar

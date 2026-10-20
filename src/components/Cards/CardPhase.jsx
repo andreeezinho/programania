@@ -7,15 +7,15 @@ export default function CardPhase({
   amount,
   image,
   onDetails,
-  difficulty = "Fácil",
-  status = "Completo",
+  difficulty = "",
+  status = "",
   ...props
 }) {
   const Container = onDetails ? 'button' : Link;
   return (
     <Container
       {...(onDetails ? { type: "button", onClick: onDetails } : { to: `/fases/${uuid}` })}
-      className="block w-full max-w-[300px] text-left cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#78933f]"
+      className="w-full max-w-[300px] text-left cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#78933f] mx-auto"
       {...props}
     >
       <div className="flex min-h-[130px] overflow-hidden rounded-md border border-[#deded8] bg-white shadow-[0_3px_4px_rgba(0,0,0,0.18)] transition hover:shadow-md p-2">
@@ -39,7 +39,7 @@ export default function CardPhase({
           </h2>
 
           <p className="mt-1 text-[9px] text-[#77796f]">
-            {amount} desafios
+            {amount}° fase
           </p>
 
           <div className="mt-1 flex items-center gap-1 text-[9px] text-[#f2635d]">

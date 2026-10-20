@@ -48,7 +48,7 @@ export default function FaseDetalhes() {
                         </button>
                     </header>
 
-                    <div className="grid items-center gap-8 py-8 md:grid-cols-2 md:px-8">
+                    <div className="flex justify-center items-center gap-8 gap-x-24 py-8 md:px-8">
                         <div className="flex justify-center">
                             <img
                                 src={PcImage}
@@ -59,7 +59,7 @@ export default function FaseDetalhes() {
 
                         <div>
                             <h2 className="mb-2 text-lg font-bold">Descrição</h2>
-                            <p className="text-justify text-sm w-lg">
+                            <p className="text-justify text-sm w-3xl">
                                 {fase?.descricao}
                             </p>
                         </div>

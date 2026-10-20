@@ -66,7 +66,7 @@ export default function Home() {
             Fases Disponíveis
           </h2>
 
-          <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3 mt-10">
             {fases?.map((fase) => (
               <CardPhase
                 key={fase.uuid}

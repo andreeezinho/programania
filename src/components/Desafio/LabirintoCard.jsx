@@ -3,6 +3,7 @@ import catImage from "../../assets/image 6.png";
 import canImage from "../../assets/image 7.png";
 import ExecuteButton from "../Buttons/ExecuteButton";
 import RestartButton from "../Buttons/RestartButton";
+import FinishCardModal from "../Modal/FinishCardModal";
 
 const TOTAL_CELLS = 28;
 const COLUMNS = 7;
@@ -98,13 +99,14 @@ export default function LabirintoCard({
   style,
   boardClassName = "",
   boardStyle,
-  desafio
+  desafio,
+  faseUuid
 }) {
   const START_CELL = desafio?.startCell;
   const FINISH_CELL = desafio?.finishCell;
   const [posicao, setPosicao] = useState(START_CELL);
   const [executando, setExecutando] = useState(false);
-  const [mensagem, setMensagem] = useState("");
+  const [mensagem, setMensagem] = useState(false);
   const posicaoAtual = useRef(START_CELL);
 
   useEffect(() => {
@@ -119,7 +121,7 @@ export default function LabirintoCard({
     if (executando || executeDisabled) return;
 
     setExecutando(true);
-    setMensagem("");
+    setMensagem(false);
     posicaoAtual.current = START_CELL;
     setPosicao(START_CELL);
 
@@ -194,7 +196,7 @@ export default function LabirintoCard({
         await aguardar(STEP_DELAY_MS);
 
         if (proximaPosicao === FINISH_CELL) {
-          setMensagem("O gato chegou ao destino!");
+          setMensagem(true);
           return;
         }
       }
@@ -256,14 +258,22 @@ export default function LabirintoCard({
       </div>
 
       {mensagem && (
-        <p role="status" className="text-center text-sm font-bold text-[#768E44]">
-          {mensagem}
-        </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <FinishCardModal
+            faseUuid={faseUuid}
+            desafioUuid={desafio?.uuid}
+            onBack={() => setMensagem(false)}
+          />
+        </div>
       )}
 
       <div className="flex justify-between">
         <RestartButton
-          onClick={() => {setPosicao(START_CELL)}}
+          onClick={() => {
+            setPosicao(START_CELL);
+            posicaoAtual.current = START_CELL;
+            setMensagem(false);
+          }}
           disabled={executeDisabled || executando}
         />
         <ExecuteButton

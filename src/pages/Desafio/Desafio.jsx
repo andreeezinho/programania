@@ -348,7 +348,7 @@ export default function Desafio() {
                         </div>
                         <div className="flex flex-col w-1/2 p-8 pt-6 gap-y-8">
                             <div className="py-0 shadow-[0_5px_5px_rgba(0,0,0,0.25)] rounded-lg">
-                                <LabirintoCard codigo={codigo} desafio={desafio} />
+                                <LabirintoCard codigo={codigo} desafio={desafio} faseUuid={uuid} />
                             </div>
 
                             <div className="flex w-full flex-col rounded-lg bg-[#F3F3F3] p-3 shadow-[0_5px_5px_rgba(0,0,0,0.25)] h-full">
