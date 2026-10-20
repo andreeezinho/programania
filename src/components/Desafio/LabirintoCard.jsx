@@ -9,6 +9,32 @@ const COLUMNS = 7;
 const STEP_DELAY_MS = 1000;
 const MAX_WHILE_ITERATIONS = 100;
 
+function posicaoLivre(destino) {
+  return destino >= 0 && destino < TOTAL_CELLS;
+}
+
+function condicaoPassa(condicao, posicao) {
+  const linha = Math.floor(posicao / COLUMNS);
+  const coluna = posicao % COLUMNS;
+
+  const destinos = {
+    esquerda: coluna > 0 ? posicao - 1 : null,
+    direita: coluna < COLUMNS - 1 ? posicao + 1 : null,
+    cima: linha > 0 ? posicao - COLUMNS : null,
+    baixo: linha < Math.floor((TOTAL_CELLS - 1) / COLUMNS)
+      ? posicao + COLUMNS
+      : null,
+  };
+
+  const destino = destinos[condicao];
+  return destino !== null && destino !== undefined && posicaoLivre(destino);
+}
+
+function condicaoVerdadeira(condicao, posicao) {
+  if (condicao === "evento") return true;
+  return condicaoPassa(condicao, posicao);
+}
+
 function criarArvore(blocos) {
   const raiz = [];
   const escopos = [];
@@ -58,10 +84,6 @@ function criarArvore(blocos) {
   }
 
   return raiz;
-}
-
-function condicaoVerdadeira(condicao) {
-  return condicao === "evento";
 }
 
 function aguardar(ms) {
@@ -114,7 +136,7 @@ export default function LabirintoCard({
           for (let i = 0; i < repeticoes; i++) {
             if (
               bloco.tipo === "while" &&
-              !condicaoVerdadeira(bloco.condicao)
+              !condicaoVerdadeira(bloco.condicao, posicaoAtual.current)
             ) {
               break;
             }
@@ -126,7 +148,7 @@ export default function LabirintoCard({
         }
 
         if (bloco.tipo === "if") {
-          const ramo = condicaoVerdadeira(bloco.condicao)
+          const ramo = condicaoVerdadeira(bloco.condicao, posicaoAtual.current)
             ? bloco.filhos
             : bloco.alternativo ?? [];
 

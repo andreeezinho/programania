@@ -34,7 +34,9 @@ const ComponentesBloco = {
 };
 
 function gerarRepresentacao({ tipo, valor, condicao }) {
-    const expressao = condicao === "teste" ? "teste" : "algoAcontecer";
+    const expressao = ["esquerda", "direita", "cima", "baixo"].includes(condicao)
+    ? `livre("${condicao}")`
+    : "false";
 
     const linhas = {
         for: `for (let i = 0; i < ${Math.max(0, Number(valor) || 0)}; i++) {`,
