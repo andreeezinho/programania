@@ -3,8 +3,51 @@ import Button from "../../components/Buttons/Button";
 import cadastroImage from "../../assets/cadastro-image.png";
 import PasswordInput from "../../components/Inputs/PasswordInput";
 import ButtonGoogle from "../../components/Buttons/ButtonGoogle";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { register } from "../../services/User/UserService";
+import { toast } from "sonner";
 
 export default function Cadastro() {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+        login: "",
+        nome: "",
+        email: "",
+        password: "",
+        role: 0,
+        confirmPassword: "",
+        ativo: 1,
+  });
+
+  const handleRegister = async (e) => {
+      e.preventDefault();
+      try{
+          const response = await register(formData);
+
+          if(response){
+              toast.success("Conta criada com sucesso!");
+              navigate('/login');
+          }else{
+              toast.error("Erro ao criar conta." || res.error);
+          }
+      }catch(error){
+          console.log("Erro ao criar conta: ", error);
+      }
+  }
+
+  const handleChange = (e) => {
+      setFormData({
+          ...formData,
+          [e.target.name]: e.target.value,
+      })
+  }
+
+  const sendToGoogleAuth = () => {
+    window.location.href = "https://programania-api.onrender.com/oauth2/authorization/google";
+  }
+  console.log(formData);
   return (
     <main className="flex min-h-[100dvh] w-full font-intel-one-mono bg-[url('/background.png')] bg-cover bg-center">
 
@@ -41,14 +84,25 @@ export default function Cadastro() {
             </a>
           </p>
 
-          <form className="flex flex-col gap-4">
-
+          <form className="flex flex-col gap-4" onSubmit={handleRegister}>
             <Input
               label="Nome"
               type="text"
               placeholder="Insira o seu nome"
-              name="name"
+              name="nome"
               text_color="white"
+              value={formData.nome}
+              onChange={handleChange}
+            />
+
+            <Input
+              label="Nome de usuário"
+              type="text"
+              placeholder="Insira o seu nome de usuário"
+              name="login"
+              text_color="white"
+              value={formData.login}
+              onChange={handleChange}
             />
 
             <Input
@@ -57,18 +111,24 @@ export default function Cadastro() {
               placeholder="Insira o seu e-mail"
               name="email"
               text_color="white"
+              value={formData.email}
+              onChange={handleChange}
             />
 
             <PasswordInput
               label="Senha"
               placeholder="Insira a sua senha"
               name="password"
+              value={formData.password}
+              onChange={handleChange}
             />
 
             <PasswordInput
-              label="Senha"
+              label="Confirmar Senha"
               placeholder="Confirmar a sua senha"
               name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
             />
 
             <div className="mt-4 flex justify-center">
@@ -90,7 +150,7 @@ export default function Cadastro() {
             </div>
 
             <div className="flex justify-center">
-              <ButtonGoogle />
+              <ButtonGoogle onClick={sendToGoogleAuth} />
             </div>
 
           </form>

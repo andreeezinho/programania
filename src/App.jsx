@@ -5,10 +5,18 @@ import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import Cadastro from "./pages/Cadastro/Cadastro";
 import Ajuda from "./pages/Ajuda/ajuda";
+import Perfil from "./pages/Perfil/Perfil";
+import MinhasFases from "./pages/Fases/MinhasFases";
+import Fases from "./pages/Fases/Fases";
+import FaseDetalhes from "./pages/Fases/FaseDetalhes";
+import Desafio from "./pages/Desafio/Desafio";
+import { Toaster } from 'sonner';
 
 export default function App() {
   return(
     <>
+      <Toaster position='top-right' richColors/>
+
       <Router>
         <Routes>
 
@@ -22,7 +30,12 @@ export default function App() {
 
           <Route path="/" element={<PrivateRoute />}>
             <Route index element={<Home />} />
+            <Route path="/fases" element={<Fases />} />
+            <Route path="/fases/:uuid" element={<FaseDetalhes />} />
+            <Route path="/fases/:uuid/desafio/:desafioUuid" element={<Desafio />} />
             <Route path="/ajuda" element={<Ajuda />} />
+            <Route path="/perfil" element={<Perfil />} />
+            <Route path="/minhas-fases" element={<MinhasFases />} />
           </Route>
 
         </Routes>

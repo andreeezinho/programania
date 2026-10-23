@@ -4,6 +4,7 @@ export default function PasswordInput({
   label,
   type = "password",
   placeholder,
+  labelClassName = "text-sm font-bold text-white",
   ...props
 }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,7 +15,7 @@ export default function PasswordInput({
 
   return (
     <label className="flex w-full flex-col gap-2">
-      <span className="text-sm font-bold text-white">
+      <span className={labelClassName}>
         {label}
       </span>
 

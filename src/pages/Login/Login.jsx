@@ -6,9 +6,11 @@ import Button from "../../components/Buttons/Button";
 import ButtonGoogle from "../../components/Buttons/ButtonGoogle";
 import loginImage from "../../assets/login-image.png";
 import PasswordInput from "../../components/Inputs/PasswordInput";
+import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const {login, googleLogin} = useAuth();
   const {search} = useLocation();
   const params = new URLSearchParams(search);
@@ -21,17 +23,25 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (loading) return;
+    setLoading(true);
     
     try{
       const response = await login(formData);
 
       if(response){
+        toast.success('Login efetuado!');
         navigate("/");
       }else{
+        toast.error('Erro ao efetuar login');
         console.log("Login failed: " + response.error);
       }
     }catch(error){
+      toast.error('Erro ao efetuar login');
       console.error("Error during login: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -42,16 +52,22 @@ export default function Login() {
 
       hasSentCode.current = true;
       console.log(code);
+      setLoading(true);
       const authGoogle = async () => {
         try {
           const response = await googleLogin(code);
 
           if(response){
+            toast.success('Login efetuado!');
             navigate("/");
           }else{
+            setLoading(false);
+            toast.error('Erro ao efetuar login com o Google');
             console.log("Google login failed: " + response.error);
           }
         }catch (error) {
+          setLoading(false);
+          toast.error('Erro ao efetuar login com o Google');
           console.error("Error during Google login: ", error);
         }
       }
@@ -60,7 +76,7 @@ export default function Login() {
   }, [search]);
 
   const sendToGoogleAuth = () => {
-    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+    window.location.href = "https://programania-api.onrender.com/oauth2/authorization/google";
   }
 
   const handleChange = (e) => {
@@ -135,6 +151,7 @@ export default function Login() {
               <Button
                 type="submit"
                 text="Entrar"
+                loading={loading}
                 className="rounded-xl bg-[#F2635D] px-10 py-2 text-sm font-bold text-white shadow-md cursor-pointer transition hover:bg-[#e55a50]"
               />
             </div>
