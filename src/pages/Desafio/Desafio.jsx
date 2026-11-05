@@ -1,8 +1,13 @@
+
+import { useRef, useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 import Sidebar from "../../components/Layout/Sidebar";
+
 import BlocoFor from "../../components/Blocos/BlocoFor";
 import ForContinue from "../../components/Blocos/ForContinue";
 import ForPare from "../../components/Blocos/ForPare";
@@ -15,8 +20,13 @@ import BlocoEsquerda from "../../components/Blocos/BlocoEsquerda";
 import BlocoDireita from "../../components/Blocos/BlocoDireita";
 import BlocoCima from "../../components/Blocos/BlocoCIma";
 import BlocoBaixo from "../../components/Blocos/BlocoBaixo";
+
 import LabirintoCard from "../../components/Desafio/LabirintoCard";
-import { getBlocosFromDesafio, getDesafio } from "../../services/Desafio/DesafioService";
+
+import {
+    getBlocosFromDesafio,
+    getDesafio
+} from "../../services/Desafio/DesafioService";
 
 const ComponentesBloco = {
     for: BlocoFor,
@@ -35,8 +45,8 @@ const ComponentesBloco = {
 
 function gerarRepresentacao({ tipo, valor, condicao }) {
     const expressao = ["esquerda", "direita", "cima", "baixo"].includes(condicao)
-    ? `livre("${condicao}")`
-    : "false";
+        ? `livre("${condicao}")`
+        : "false";
 
     const linhas = {
         for: `for (let i = 0; i < ${Math.max(0, Number(valor) || 0)}; i++) {`,
@@ -166,23 +176,36 @@ export default function Desafio() {
     const { logout } = useAuth();
     const navigate = useNavigate();
     const { uuid, desafioUuid } = useParams();
+
     const [desafio, setDesafio] = useState(null);
     const [codigo, setCodigo] = useState([]);
     const [loading, setLoading] = useState(true);
     const [blocos, setBlocos] = useState(null);
 
-    const findDesafio = async () => {
-        const response = await getDesafio(desafioUuid);
-        console.log(response);
-        setDesafio(response);
-    }
+    // CARREGAMENTO DOS DADOS
+    useEffect(() => {
+        async function carregarDados() {
+            setLoading(true);
 
-    const list = async () => {
-        const response = await getBlocosFromDesafio(desafioUuid);
-        console.log(response);
-        setBlocos(response);
-        setLoading(false);
-    }
+            try {
+                const [desafioResponse, blocosResponse] = await Promise.all([
+                    getDesafio(desafioUuid),
+                    getBlocosFromDesafio(desafioUuid)
+                ]);
+
+                setDesafio(desafioResponse);
+                setBlocos(blocosResponse);
+
+            } catch (error) {
+                console.error("Erro ao carregar desafio:", error);
+
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        carregarDados();
+    }, [desafioUuid]);
 
     function atualizarBloco(id, campo, valor) {
         setCodigo((blocos) =>
@@ -207,159 +230,347 @@ export default function Desafio() {
 
                 const novosBlocos = [...blocos];
                 const [blocoMovido] = novosBlocos.splice(origem, 1);
+
                 const destino = destinoId
                     ? novosBlocos.findIndex((bloco) => bloco.id === destinoId)
                     : novosBlocos.length;
 
-                novosBlocos.splice(destino === -1 ? novosBlocos.length : destino, 0, blocoMovido);
+                novosBlocos.splice(
+                    destino === -1 ? novosBlocos.length : destino,
+                    0,
+                    blocoMovido
+                );
+
                 return novosBlocos;
             });
+
             return;
         }
 
         const tipo = event.dataTransfer.getData("application/x-bloco");
+
         if (!ComponentesBloco[tipo]) return;
 
         const novoBloco = {
             id: `${Date.now()}-${Math.random()}`,
             tipo,
             ...(tipo === "for" ? { valor: "1" } : {}),
-            ...(["while", "if"].includes(tipo) ? { condicao: "evento" } : {}),
+            ...(["while", "if"].includes(tipo)
+                ? { condicao: "evento" }
+                : {}),
         };
 
         setCodigo((blocos) => {
             if (!destinoId) return [...blocos, novoBloco];
 
-            const destino = blocos.findIndex((bloco) => bloco.id === destinoId);
+            const destino = blocos.findIndex(
+                (bloco) => bloco.id === destinoId
+            );
+
             if (destino === -1) return [...blocos, novoBloco];
 
             const novosBlocos = [...blocos];
             novosBlocos.splice(destino, 0, novoBloco);
+
             return novosBlocos;
         });
     }
 
-    useEffect(() => {
-        findDesafio();
-        list();
-    }, []);
-
-    return(
+    return (
         <main className="min-h-screen bg-[url('/background.png')] p-0 font-mono text-[#6f7759] md:p-2">
-            <div className="flex min-h-[calc(100vh-2rem)] md:rounded-md">
-                <Sidebar handleLogout={logout} />
-                <section className="flex min-w-0 flex-1 flex-col rounded-2xl bg-[#f8f8f6] px-6 py-7 md:px-12 md:py-8">
-                    <header className="border-b border-[#9aa77a]">
-                        <button type="button" onClick={() => {navigate(-1)}} className="text-sm font-bold tracking-wide flex gap-x-2 p-1 mb-1 rounded-lg cursor-pointer hover:bg-[#ececec]">
-                            <svg fill="#6f7759" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve" className="w-4">
-                                <path d="M48.6,23H15.4c-0.9,0-1.3-1.1-0.7-1.7l9.6-9.6c0.6-0.6,0.6-1.5,0-2.1l-2.2-2.2c-0.6-0.6-1.5-0.6-2.1,0
-                                    L2.5,25c-0.6,0.6-0.6,1.5,0,2.1L20,44.6c0.6,0.6,1.5,0.6,2.1,0l2.1-2.1c0.6-0.6,0.6-1.5,0-2.1l-9.6-9.6C14,30.1,14.4,29,15.3,29
-                                    h33.2c0.8,0,1.5-0.6,1.5-1.4v-3C50,23.8,49.4,23,48.6,23z"/>
-                            </svg>
-                            {desafio?.nome}
-                        </button>
-                    </header>
-                    <div className="flex w-full flex-1 min-h-0">
-                        <div className="flex w-1/2 min-h-0 flex-col gap-y-10 p-8">
-                            <div className="w-full p-3 rounded-lg bg-[#F3F3F3] text-[#768E44] pb-10 shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
-                                <h3 className="text-lg mb-5 text-start font-bold">O que fazer:</h3>
 
-                                <p className="text-justify text-sm ">
-                                    {desafio?.descricao}
-                                </p>
+            <div className="flex min-h-[calc(100vh-2rem)] md:rounded-md">
+
+                <Sidebar handleLogout={logout} />
+
+                <section className="flex min-w-0 flex-1 flex-col rounded-2xl bg-[#f8f8f6] px-6 py-7 md:px-12 md:py-8">
+
+                    {/* CABEÇALHO */}
+                    <header className="border-b border-[#9aa77a]">
+
+                        <button
+                            type="button"
+                            onClick={() => navigate(-1)}
+                            className="mb-1 flex cursor-pointer gap-x-2 rounded-lg p-1 text-sm font-bold tracking-wide hover:bg-[#ececec]"
+                        >
+                            <svg
+                                fill="#6f7759"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 52 52"
+                                className="w-4"
+                            >
+                                <path d="M48.6,23H15.4c-0.9,0-1.3-1.1-0.7-1.7l9.6-9.6c0.6-0.6,0.6-1.5,0-2.1l-2.2-2.2c-0.6-0.6-1.5-0.6-2.1,0L2.5,25c-0.6,0.6-0.6,1.5,0,2.1L20,44.6c0.6,0.6,1.5,0.6,2.1,0l2.1-2.1c0.6-0.6,0.6-1.5,0-2.1l-9.6-9.6C14,30.1,14.4,29,15.3,29h33.2c0.8,0,1.5-0.6,1.5-1.4v-3C50,23.8,49.4,23,48.6,23z" />
+                            </svg>
+
+                            {loading ? (
+                                <Skeleton width={150} height={16} />
+                            ) : (
+                                desafio?.nome
+                            )}
+                        </button>
+
+                    </header>
+
+                    <div className="flex min-h-0 w-full flex-1">
+
+                        {/* COLUNA ESQUERDA */}
+                        <div className="flex min-h-0 w-1/2 flex-col gap-y-10 p-8">
+
+                            {/* O QUE FAZER */}
+                            <div className="w-full rounded-lg bg-[#F3F3F3] p-3 pb-10 text-[#768E44] shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+
+                                <h3 className="mb-5 text-start text-lg font-bold">
+                                    O que fazer:
+                                </h3>
+
+                                {loading ? (
+                                    <Skeleton
+                                        count={3}
+                                        height={12}
+                                        className="mb-2"
+                                    />
+                                ) : (
+                                    <p className="text-justify text-sm">
+                                        {desafio?.descricao}
+                                    </p>
+                                )}
+
                             </div>
 
-                            <div className="flex w-full flex-1 min-h-0 flex-col rounded-lg bg-[#F3F3F3] p-3 shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
-                                <h3 className="text-lg mb-5 text-start font-bold text-[#768E44]">Blocos (Códigos):</h3>
+                            {/* BLOCOS DE CÓDIGO */}
+                            <div className="flex min-h-0 w-full flex-1 flex-col rounded-lg bg-[#F3F3F3] p-3 shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
 
-                                <div className="flex flex-col w-full gap-y-4">
-                                    {blocos?.map((bloco) => {
-                                        if(bloco.bloco.tipo == "for"){
-                                            return(
-                                                <BlocoArrastavel tipo="for">
-                                                    <BlocoFor />
-                                                </BlocoArrastavel>
-                                            );
-                                        }   
+                                <h3 className="mb-5 text-start text-lg font-bold text-[#768E44]">
+                                    Blocos (Códigos):
+                                </h3>
 
-                                        if(bloco.bloco.tipo == "forPare"){
-                                            return(
-                                                <div className="flex gap-x-4">
-                                                    <BlocoArrastavel tipo="forContinue" className="flex-1 min-w-0">
-                                                        <ForContinue />
+                                <div className="flex w-full flex-col gap-y-4">
+
+                                    {loading ? (
+
+                                        Array.from({ length: 5 }).map((_, index) => (
+                                            <Skeleton
+                                                key={index}
+                                                height={55}
+                                                borderRadius={8}
+                                            />
+                                        ))
+
+                                    ) : (
+
+                                        blocos?.map((bloco, index) => {
+
+                                            if (bloco.bloco.tipo === "for") {
+                                                return (
+                                                    <BlocoArrastavel
+                                                        key={index}
+                                                        tipo="for"
+                                                    >
+                                                        <BlocoFor />
                                                     </BlocoArrastavel>
-                                                    <BlocoArrastavel tipo="forPare" className="flex-1 min-w-0">
-                                                        <ForPare />
+                                                );
+                                            }
+
+                                            if (bloco.bloco.tipo === "forPare") {
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className="flex gap-x-4"
+                                                    >
+                                                        <BlocoArrastavel
+                                                            tipo="forContinue"
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <ForContinue />
+                                                        </BlocoArrastavel>
+
+                                                        <BlocoArrastavel
+                                                            tipo="forPare"
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <ForPare />
+                                                        </BlocoArrastavel>
+                                                    </div>
+                                                );
+                                            }
+
+                                            if (bloco.bloco.tipo === "while") {
+                                                return (
+                                                    <BlocoArrastavel
+                                                        key={index}
+                                                        tipo="while"
+                                                    >
+                                                        <BlocoWhile />
                                                     </BlocoArrastavel>
-                                                </div>
-                                            );
-                                        } 
+                                                );
+                                            }
 
-                                        if(bloco.bloco.tipo == "while"){
-                                            return(
-                                                <BlocoArrastavel tipo="while">
-                                                    <BlocoWhile />
-                                                </BlocoArrastavel>
-                                            );
-                                        } 
+                                            if (bloco.bloco.tipo === "whilePare") {
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className="flex gap-x-4"
+                                                    >
+                                                        <BlocoArrastavel
+                                                            tipo="whileContinue"
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <WhileContinue />
+                                                        </BlocoArrastavel>
 
-                                        if(bloco.bloco.tipo == "whilePare"){
-                                            return(
-                                                <div className="flex gap-x-4">
-                                                    <BlocoArrastavel tipo="whileContinue" className="flex-1 min-w-0">
-                                                        <WhileContinue />
-                                                    </BlocoArrastavel>
-                                                    <BlocoArrastavel tipo="whilePare" className="flex-1 min-w-0">
-                                                        <WhilePare />
-                                                    </BlocoArrastavel>
-                                                </div>
-                                            );
-                                        } 
+                                                        <BlocoArrastavel
+                                                            tipo="whilePare"
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <WhilePare />
+                                                        </BlocoArrastavel>
+                                                    </div>
+                                                );
+                                            }
 
-                                        if(bloco.bloco.tipo == "if"){
-                                            return(
-                                                <div className="flex gap-x-4">
-                                                    <BlocoArrastavel tipo="if" className="flex-1 min-w-0"><BlocoIf /></BlocoArrastavel>
-                                                    <BlocoArrastavel tipo="else" className="flex-1 min-w-0"><BlocoElse /></BlocoArrastavel>
-                                                </div>
-                                            );
-                                        }
-                                        
-                                        if(bloco.bloco.tipo == "esquerda"){
-                                            return(
-                                                <div className="flex gap-x-4">
-                                                    <BlocoArrastavel tipo="esquerda" className="flex-1 min-w-0"><BlocoEsquerda /></BlocoArrastavel>
-                                                    <BlocoArrastavel tipo="direita" className="flex-1 min-w-0"><BlocoDireita /></BlocoArrastavel>
-                                                </div>
-                                            );
-                                        }
+                                            if (bloco.bloco.tipo === "if") {
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className="flex gap-x-4"
+                                                    >
+                                                        <BlocoArrastavel
+                                                            tipo="if"
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <BlocoIf />
+                                                        </BlocoArrastavel>
 
-                                        if(bloco.bloco.tipo == "cima"){
-                                            return(
-                                                <div className="flex gap-x-4">
-                                                    <BlocoArrastavel tipo="cima" className="flex-1 min-w-0"><BlocoCima /></BlocoArrastavel>
-                                                    <BlocoArrastavel tipo="baixo" className="flex-1 min-w-0"><BlocoBaixo /></BlocoArrastavel>
-                                                </div>
-                                            );
-                                        }
-                                    })}
+                                                        <BlocoArrastavel
+                                                            tipo="else"
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <BlocoElse />
+                                                        </BlocoArrastavel>
+                                                    </div>
+                                                );
+                                            }
+
+                                            if (bloco.bloco.tipo === "esquerda") {
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className="flex gap-x-4"
+                                                    >
+                                                        <BlocoArrastavel
+                                                            tipo="esquerda"
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <BlocoEsquerda />
+                                                        </BlocoArrastavel>
+
+                                                        <BlocoArrastavel
+                                                            tipo="direita"
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <BlocoDireita />
+                                                        </BlocoArrastavel>
+                                                    </div>
+                                                );
+                                            }
+
+                                            if (bloco.bloco.tipo === "cima") {
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className="flex gap-x-4"
+                                                    >
+                                                        <BlocoArrastavel
+                                                            tipo="cima"
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <BlocoCima />
+                                                        </BlocoArrastavel>
+
+                                                        <BlocoArrastavel
+                                                            tipo="baixo"
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <BlocoBaixo />
+                                                        </BlocoArrastavel>
+                                                    </div>
+                                                );
+                                            }
+
+                                            return null;
+                                        })
+
+                                    )}
+
                                 </div>
                             </div>
+
                         </div>
-                        <div className="flex flex-col w-1/2 p-8 pt-6 gap-y-8">
-                            <div className="py-0 shadow-[0_5px_5px_rgba(0,0,0,0.25)] rounded-lg">
-                                <LabirintoCard codigo={codigo} desafio={desafio} faseUuid={uuid} />
+
+                        {/* COLUNA DIREITA */}
+                        <div className="flex w-1/2 flex-col gap-y-8 p-8 pt-6">
+
+                            {/* RESULTADO DO LABIRINTO */}
+                            <div className="rounded-lg shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+
+                                {loading ? (
+
+                                    <div className="rounded-lg bg-[#F3F3F3] p-4">
+
+                                        <Skeleton
+                                            width={120}
+                                            height={20}
+                                            className="mb-6"
+                                        />
+
+                                        <Skeleton
+                                            height={180}
+                                            borderRadius={10}
+                                        />
+
+                                        <div className="mt-4 flex justify-between">
+                                            <Skeleton
+                                                circle
+                                                width={35}
+                                                height={35}
+                                            />
+
+                                            <Skeleton
+                                                width={90}
+                                                height={35}
+                                            />
+                                        </div>
+
+                                    </div>
+
+                                ) : (
+
+                                    <LabirintoCard
+                                        codigo={codigo}
+                                        desafio={desafio}
+                                        faseUuid={uuid}
+                                    />
+
+                                )}
+
                             </div>
 
-                            <div className="flex w-full flex-col rounded-lg bg-[#F3F3F3] p-3 shadow-[0_5px_5px_rgba(0,0,0,0.25)] h-full">
+                            {/* SEU CÓDIGO */}
+                            <div className="flex h-full w-full flex-col rounded-lg bg-[#F3F3F3] p-3 shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+
                                 <div className="flex shrink-0 items-center justify-between py-0">
-                                    <h3 className="text-lg mb-5 text-start font-bold text-[#768E44] py-0">Seu código:</h3>
+
+                                    <h3 className="mb-5 py-0 text-start text-lg font-bold text-[#768E44]">
+                                        Seu código:
+                                    </h3>
+
                                     <button
                                         type="button"
                                         aria-label="Excluir todos os blocos"
                                         title="Excluir todos os blocos"
                                         onClick={() => setCodigo([])}
-                                        className="cursor-pointer rounded p-1 hover:bg-white/20"
+                                        disabled={loading}
+                                        className="cursor-pointer rounded p-1 hover:bg-white/20 disabled:cursor-not-allowed"
                                     >
                                         <svg
                                             fill="#E36053"
@@ -369,7 +580,8 @@ export default function Desafio() {
                                         >
                                             <path d="M20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Z" />
                                         </svg>
-                                    </button>    
+                                    </button>
+
                                 </div>
 
                                 <div
@@ -377,52 +589,92 @@ export default function Desafio() {
                                     onDrop={adicionarBloco}
                                     className="flex w-full flex-1 flex-col gap-y-3"
                                 >
-                                    {codigo.map(({ id, tipo, valor, condicao }) => {
-                                        const Bloco = ComponentesBloco[tipo];
-                                        const campo = tipo === "for" ? "valor" : "condicao";
 
-                                        return (
-                                            <div key={id} className="relative min-w-0">
-                                                <Bloco
-                                                    value={tipo === "for" ? valor : condicao}
-                                                    onChange={(event) =>
-                                                        atualizarBloco(id, campo, event.target.value)
-                                                    }
-                                                />
+                                    {loading ? (
 
-                                                <button
-                                                    type="button"
-                                                    aria-label="Excluir bloco"
-                                                    title="Excluir bloco"
-                                                    onClick={() =>
-                                                        setCodigo((blocos) =>
-                                                            blocos.filter((bloco) => bloco.id !== id)
-                                                        )
-                                                    }
-                                                    className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded p-1 hover:bg-white/20"
+                                        <div className="flex flex-col gap-y-4">
+                                            <Skeleton height={50} />
+                                            <Skeleton height={50} />
+                                            <Skeleton height={50} />
+                                        </div>
+
+                                    ) : (
+
+                                        codigo.map(({ id, tipo, valor, condicao }) => {
+
+                                            const Bloco = ComponentesBloco[tipo];
+                                            const campo = tipo === "for"
+                                                ? "valor"
+                                                : "condicao";
+
+                                            return (
+                                                <div
+                                                    key={id}
+                                                    className="relative min-w-0"
                                                 >
-                                                    <svg
-                                                        fill="white"
-                                                        viewBox="0 0 24 24"
-                                                        className="h-8 w-8 transition-all hover:scale-110"
-                                                        xmlns="http://www.w3.org/2000/svg"
+
+                                                    <Bloco
+                                                        value={
+                                                            tipo === "for"
+                                                                ? valor
+                                                                : condicao
+                                                        }
+                                                        onChange={(event) =>
+                                                            atualizarBloco(
+                                                                id,
+                                                                campo,
+                                                                event.target.value
+                                                            )
+                                                        }
+                                                    />
+
+                                                    <button
+                                                        type="button"
+                                                        aria-label="Excluir bloco"
+                                                        title="Excluir bloco"
+                                                        onClick={() =>
+                                                            setCodigo((blocos) =>
+                                                                blocos.filter(
+                                                                    (bloco) => bloco.id !== id
+                                                                )
+                                                            )
+                                                        }
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded p-1 hover:bg-white/20"
                                                     >
-                                                        <path d="M20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Z" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        );
-                                    })}
+                                                        <svg
+                                                            fill="white"
+                                                            viewBox="0 0 24 24"
+                                                            className="h-8 w-8 transition-all hover:scale-110"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                            <path d="M20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Z" />
+                                                        </svg>
+                                                    </button>
+
+                                                </div>
+                                            );
+                                        })
+
+                                    )}
+
                                 </div>
 
-                                {console.log(codigo.length
-                                        ? gerarCodigo(codigo)
-                                        : "// Arraste blocos para montar o código")}
+                                {!loading && codigo.length > 0 && (
+                                    <pre className="mt-4 whitespace-pre-wrap text-xs text-[#6f7759]">
+                                        {gerarCodigo(codigo)}
+                                    </pre>
+                                )}
+
                             </div>
+
                         </div>
+
                     </div>
+
                 </section>
+
             </div>
+
         </main>
     );
 }
