@@ -6,8 +6,32 @@ import Banner from "../../components/Banners/BannerHome";
 import InputSearch from "../../components/Inputs/InputSearch";
 import CardPhase from "../../components/Cards/CardPhase";
 import { getFase } from "../../services/Fase/FaseService";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const SKELETON_ITEMS = Array.from({ length: 8 });
+
+function CardPhaseSkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-[300px] rounded-md border border-[#deded8] bg-white p-2 shadow-[0_3px_4px_rgba(0,0,0,0.18)]">
+      <div className="flex min-h-[130px]">
+        <div className="w-[82px] shrink-0">
+          <Skeleton height="100%" borderRadius={4} />
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col px-4 py-3">
+          <Skeleton width="35%" height={8} />
+          <Skeleton width="70%" height={12} className="mt-2" />
+          <Skeleton width="50%" height={8} className="mt-2" />
+
+          <div className="mt-auto border-t border-[#d9dacd] pt-2">
+            <Skeleton width={64} height={16} borderRadius={999} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const { logout } = useContext(AuthContext);
