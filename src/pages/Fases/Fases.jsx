@@ -8,7 +8,7 @@ import { getFase } from "../../services/Fase/FaseService";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-const SKELETON_ITEMS = Array.from({ length: 6 });
+const SKELETON_ITEMS = Array.from({ length: 8 });
 
 function CardPhaseSkeleton() {
   return (

@@ -7,6 +7,8 @@ import InputSearch from "../../components/Inputs/InputSearch";
 import CardPhase from "../../components/Cards/CardPhase";
 import { getFase } from "../../services/Fase/FaseService";
 
+const SKELETON_ITEMS = Array.from({ length: 8 });
+
 export default function Home() {
   const { logout } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
@@ -67,14 +69,16 @@ export default function Home() {
           </h2>
 
           <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3 mt-10">
-            {fases?.map((fase) => (
-              <CardPhase
-                key={fase.uuid}
-                uuid={fase.uuid}
-                name={fase.nome}
-                amount={fase.numero}
-              />
-            ))}
+            {loading
+              ? SKELETON_ITEMS.map((_, index) => <CardPhaseSkeleton key={index} />)
+              : fases?.map((fase) => (
+                  <CardPhase
+                    key={fase.uuid}
+                    uuid={fase.uuid}
+                    name={fase.nome}
+                    amount={fase.numero}
+                  />
+                ))}
           </div>
 
         </section>
