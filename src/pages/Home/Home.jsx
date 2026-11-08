@@ -42,9 +42,13 @@ export default function Home() {
   });
 
   const list = async (params) => {
-    const response = await getFase(params);
-    setFases(response);
-    setLoading(false);
+    setLoading(true);
+    try {
+      const response = await getFase(params);
+      setFases(response);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
