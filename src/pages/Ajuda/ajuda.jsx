@@ -28,8 +28,12 @@ export default function Ajuda() {
 							<img src={heroImage} alt="Ilustração decorativa" className="h-64 w-64 object-contain opacity-70" />	
 							<div className="flex flex-col justify-center w-lg">
 								<h1 className="mb-4 text-2xl font-bold tracking-wide text-[#667d3c]">QUEM SOMOS</h1>
-								<p className="max-w-[440px] text-[10px] leading-[1.55] text-[#858a72]">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nunc ut diam consequat, vitae ultricies justo dignissim. Pellentesque eget urna commodo, maximus elit quis, aliquet quam.</p>
-								<p className="mt-3 max-w-[440px] text-[10px] leading-[1.55] text-[#858a72]">Donec nec tincidunt lorem. Nullam bibendum neque a vestibulum ornare. Donec et eros nunc. Integer quis ex id mi aliquet vestibulum vel sit amet nisi.</p>
+								<p className="max-w-[440px] text-[10px] leading-[1.55] text-[#858a72]">
+									O projeto Programania é uma plataforma de incentivo na introdução à programação para crianças e/ou iniciantes.
+								</p>
+								<p className="mt-3 max-w-[440px] text-[10px] leading-[1.55] text-[#858a72]">
+									No projeto, é feito o uso de blocos de código para cada objetivo em um desafio, dessa forma, os usuários realizam seus desafios através de uma linguagem visual.
+								</p>
 							</div>
 						</section>
 						<section className="mb-10">
