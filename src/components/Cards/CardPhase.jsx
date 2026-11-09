@@ -19,7 +19,7 @@ export default function CardPhase({
       {...props}
     >
       <div className="flex min-h-[130px] overflow-hidden rounded-md border border-[#deded8] bg-white shadow-[0_3px_4px_rgba(0,0,0,0.18)] transition hover:shadow-md p-2">
-        <div className="w-[82px] shrink-0 bg-[#f2f2ef]">
+        {/* <div className="w-[82px] shrink-0 bg-[#f2f2ef]">
           {image && (
             <img
               src={image}
@@ -27,7 +27,7 @@ export default function CardPhase({
               className="h-full w-full object-cover"
             />
           )}
-        </div>
+        </div> */}
 
         <div className="flex min-w-0 flex-1 flex-col px-4 py-3">
           <span className="text-[10px] text-[#6f7759]">
