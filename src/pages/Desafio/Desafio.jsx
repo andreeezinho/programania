@@ -507,10 +507,8 @@ export default function Desafio() {
 
                         </div>
 
-                        {/* COLUNA DIREITA */}
                         <div className="flex w-1/2 flex-col gap-y-8 p-8 pt-6">
 
-                            {/* RESULTADO DO LABIRINTO */}
                             <div className="rounded-lg shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
 
                                 {loading ? (
@@ -555,7 +553,6 @@ export default function Desafio() {
 
                             </div>
 
-                            {/* SEU CÓDIGO */}
                             <div className="flex h-full w-full flex-col rounded-lg bg-[#F3F3F3] p-3 shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
 
                                 <div className="flex shrink-0 items-center justify-between py-0">
@@ -659,11 +656,11 @@ export default function Desafio() {
 
                                 </div>
 
-                                {!loading && codigo.length > 0 && (
+                                {/* {!loading && codigo.length > 0 && (
                                     <pre className="mt-4 whitespace-pre-wrap text-xs text-[#6f7759]">
                                         {gerarCodigo(codigo)}
                                     </pre>
-                                )}
+                                )} */}
 
                             </div>
 
