@@ -81,7 +81,7 @@ export default function FaseDetalhes() {
                     </header>
 
                     <div className="flex justify-center items-center gap-8 gap-x-24 py-8 md:px-8">
-                        <div className="mx-auto">
+                        <div className="flex mx-auto items-center gap-x-8">
                             <div className="flex justify-center">
                                 <img
                                     src={PcImage}
