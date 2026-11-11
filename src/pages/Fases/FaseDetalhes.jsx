@@ -57,7 +57,6 @@ export default function FaseDetalhes() {
                 <Sidebar handleLogout={logout} />
 
                 <section className="min-w-0 flex-1 rounded-2xl bg-[#f8f8f6] px-5 py-7 md:px-8 md:py-8">
-
                     <header className="border-b border-[#9aa77a]">
                         <button
                             type="button"
@@ -82,28 +81,30 @@ export default function FaseDetalhes() {
                     </header>
 
                     <div className="flex justify-center items-center gap-8 gap-x-24 py-8 md:px-8">
-                        <div className="flex justify-center">
-                            <img
-                                src={PcImage}
-                                alt="Imagem de um computador antigo"
-                                className="w-48 max-w-full object-contain"
-                            />
-                        </div>
+                        <div className="mx-auto">
+                            <div className="flex justify-center">
+                                <img
+                                    src={PcImage}
+                                    alt="Imagem de um computador antigo"
+                                    className="w-48 max-w-full object-contain"
+                                />
+                            </div>
 
-                        <div className="min-w-0 flex-1">
-                            <h2 className="mb-2 text-lg font-bold">
-                                Descrição
-                            </h2>
+                            <div className="min-w-0 flex-1">
+                                <h2 className="mb-2 text-lg font-bold">
+                                    Descrição
+                                </h2>
 
-                            {loading ? (
-                                <div className="w-full max-w-3xl space-y-2">
-                                    <Skeleton count={3} height={12} />
-                                </div>
-                            ) : (
-                                <p className="w-full max-w-3xl text-justify text-sm">
-                                    {fase?.descricao}
-                                </p>
-                            )}
+                                {loading ? (
+                                    <div className="w-full max-w-3xl space-y-2">
+                                        <Skeleton count={3} height={12} />
+                                    </div>
+                                ) : (
+                                    <p className="w-full max-w-3xl text-justify text-sm">
+                                        {fase?.descricao}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </div>
 
